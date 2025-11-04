@@ -1,11 +1,12 @@
 import pandas as pd
 import scipy.stats as stats
-from utils import compute_car
+
+from src.analysis.utils import compute_car
 
 
 def random_sample(
-    stock_returns: pd.DataSeries, n: int = 50, filtered_idx: list = []
-) -> pd.DataSeries:
+    stock_returns: pd.Series, n: int = 50, filtered_idx: list = []
+) -> pd.Series:
     """Sample randomly from asset return data by date, with option to filter
     out certain dates.
 
@@ -30,7 +31,7 @@ def random_sample(
 
 
 def single_sample_test(
-    returns: pd.DataSeries,
+    returns: pd.Series,
     event_indices: list,
     windows: list,
     test_mean: float = 0.0,
@@ -86,7 +87,7 @@ def single_sample_test(
 
 
 def two_sample_test(
-    returns: pd.DataSeries,
+    returns: pd.Series,
     event_indices: list,
     compare_returns: pd.Series,
     windows: list,
