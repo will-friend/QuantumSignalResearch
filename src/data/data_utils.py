@@ -80,14 +80,14 @@ def scrape_arxiv(
     """
 
     search = arxiv.Search(
-        query="Quantum AND IonQ",
+        query=query,
         max_results=120,
         sort_by=arxiv.SortCriterion.SubmittedDate,
     )
 
     papers = []
     for result in search.results():
-        if pd.Timestamp(result.published.date()) >= start_date:
+        if pd.Timestamp(result.published.date()) >= pd.Timestamp(start_date):
             papers.append(
                 {
                     "title": result.title,
