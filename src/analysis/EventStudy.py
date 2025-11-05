@@ -50,7 +50,7 @@ class EventStudy:
                 self.residuals, n=n, filtered_idx=filtered_dates
             )
             results = single_sample_test(
-                random_residuals,
+                self.residuals,
                 random_residuals.index,
                 self.car_windows,
                 pop_mean,
@@ -70,7 +70,7 @@ class EventStudy:
         n: int = 50,
         M: int = 1000,
     ) -> pd.DataFrame:
-        random_results = pd.DataFrame(
+        two_sample_results = pd.DataFrame(
             index=self.car_windows, columns=["t{}".format(i) for i in range(M)]
         )
         for i in range(M):
@@ -78,12 +78,12 @@ class EventStudy:
                 self.residuals, n=n, filtered_idx=filtered_dates
             )
             results = two_sample_test(
-                self.residuals, event_dates, random_residuals, self.car_windows
+                self.residuals, event_dates, random_residuals.index, self.car_windows
             )
 
-            random_results.iloc[:, i] = results["t_stat"]
+            two_sample_results.iloc[:, i] = results["t_stat"]
 
-        mean_random = random_results.mean(axis=1).astype(float)
-        std_random = random_results.std(axis=1).astype(float)
+        mean_two_sample = two_sample_results.mean(axis=1).astype(float)
+        std_two_sample = two_sample_results.std(axis=1).astype(float)
 
-        return mean_random, std_random
+        return mean_two_sample, std_two_sample

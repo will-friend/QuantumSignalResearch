@@ -89,7 +89,7 @@ def single_sample_test(
 def two_sample_test(
     returns: pd.Series,
     event_indices: list,
-    compare_returns: pd.Series,
+    compare_events: list,
     windows: list,
 ) -> pd.DataFrame:
     """Perform a two-sample t-test of CARs over different windows for multiple
@@ -132,7 +132,7 @@ def two_sample_test(
 
     for window in windows:
         cars = []
-        for date in compare_returns:
+        for date in compare_events:
             idx = returns.index.get_loc(date)
             car = compute_car(returns, idx, window=window)
             cars.append(car)
@@ -144,9 +144,9 @@ def two_sample_test(
 
         t_stat, p_val = stats.ttest_ind(event_cars[window], compare_cars)
 
-        results.loc[window, "Mean"] = cars.mean()
-        results.loc[window, "Std"] = cars.std()
-        results.loc[window, "N"] = len(cars)
+        results.loc[window, "Mean"] = compare_cars.mean()
+        results.loc[window, "Std"] = compare_cars.std()
+        results.loc[window, "N"] = len(compare_cars)
         results.loc[window, "t_stat"] = t_stat
         results.loc[window, "p_value"] = p_val
 

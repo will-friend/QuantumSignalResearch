@@ -22,7 +22,7 @@ def compute_car(stock_returns: pd.Series, event_index: int, window: int = 5) -> 
 
 
 def rolling_residual(
-    X: pd.DataFrame, Y: pd.Series, window: int = 35, expanding: bool = True
+    Y: pd.DataFrame, X: pd.Series, window: int = 35, expanding: bool = True
 ) -> pd.Series:
     """Perform a rolling OLS regression on X against Y with a constant, and
     return the residual of the regression.
