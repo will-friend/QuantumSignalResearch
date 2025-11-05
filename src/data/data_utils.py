@@ -1,4 +1,5 @@
 import sys
+import time
 
 import arxiv
 import pandas as pd
@@ -79,23 +80,37 @@ def scrape_arxiv(
         Dataframe with query result data for each publication collected
     """
 
-    search = arxiv.Search(
-        query=query,
-        max_results=120,
-        sort_by=arxiv.SortCriterion.SubmittedDate,
-    )
+    fetched = 0
+    batch_size = 100
 
-    papers = []
-    for result in search.results():
-        if pd.Timestamp(result.published.date()) >= pd.Timestamp(start_date):
-            papers.append(
-                {
-                    "title": result.title,
-                    "authors": [a.name for a in result.authors],
-                    "published": pd.Timestamp(result.published.date()),
-                    "url": result.entry_id,
-                }
-            )
+    try:
+        search = arxiv.Search(
+            query=query,
+            max_results=max_results,
+            sort_by=arxiv.SortCriterion.SubmittedDate,
+            sort_order=arxiv.SortOrder.Descending,
+        )
+
+        papers = []
+        for result in search.results():
+            if pd.Timestamp(result.published.date()) >= pd.Timestamp(start_date):
+                papers.append(
+                    {
+                        "title": result.title,
+                        "authors": [a.name for a in result.authors],
+                        "published": pd.Timestamp(result.published.date()),
+                        "url": result.entry_id,
+                    }
+                )
+                fetched += 1
+            if fetched >= max_results:
+                break
+
+        if fetched % batch_size == 0:
+            time.sleep(0.2)
+
+    except arxiv.UnexpectedEmptyPageError:
+        pass
 
     arxiv_df = pd.DataFrame(papers)
     arxiv_df = arxiv_df.sort_values(by="published", ascending=True)
