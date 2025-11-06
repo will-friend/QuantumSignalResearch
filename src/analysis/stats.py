@@ -7,7 +7,7 @@ from src.analysis.utils import compute_car
 def random_sample(
     stock_returns: pd.Series,
     n: int = 50,
-    filtered_idx: list = [],
+    filtered_idx: list[pd.Timestamp] = [],
     replacement: bool = False,
 ) -> pd.Series:
     """Sample randomly from asset return data by date, with option to filter
@@ -19,7 +19,7 @@ def random_sample(
         Time series representing asset of interest's returns
     n : int
         Number of random samples we want to take
-    filtered_idx : list
+    filtered_idx : list[pd.Timestamp]
         List of date indices to ignore when we sample from `stock_returns`
     replacement : bool
         Boolean flag indicating if sampling shold be done with replacement
@@ -37,8 +37,8 @@ def random_sample(
 
 def single_sample_test(
     returns: pd.Series,
-    event_indices: list,
-    windows: list,
+    event_indices: list[pd.Timestamp],
+    windows: list[int],
     test_mean: float = 0.0,
 ) -> pd.DataFrame:
     """Perform a single-sample t-test of CARs over different windows for
@@ -48,9 +48,9 @@ def single_sample_test(
     ----------
     returns : pd.Series
         Timer series of abnormal returns for an underlying asset
-    event_indices : list
+    event_indices : list[pd.Timestamp]
         List of time series indices of events of interest to calculate CARs at
-    windows : list
+    windows : list[int]
         List of windows to calculate the CAR for
     test_mean : float
         Provided population mean to pass as comparison in single-sample t-test
@@ -93,9 +93,9 @@ def single_sample_test(
 
 def two_sample_test(
     returns: pd.Series,
-    event_indices: list,
-    compare_events: list,
-    windows: list,
+    event_indices: list[pd.Timestamp],
+    compare_events: list[pd.Timestamp],
+    windows: list[int],
 ) -> pd.DataFrame:
     """Perform a two-sample t-test of CARs over different windows for multiple
     events.
@@ -104,12 +104,12 @@ def two_sample_test(
     ----------
     returns : pd.Series
         Timer series of abnormal returns for an underlying asset
-    event_indices : list
+    event_indices : list[pd.Timestamp]
         List of time series indices of events of interest to calculate CARs at
-    compare_returns : pd.Series
-        Pandas series of events to act as null comparison in two-sample test
+    compare_events : list[pd.Timestamp]
+        List of pseudo-event dates to act as null comparison in two-sample test
         (usually random)
-    windows : list
+    windows : list[int]
         List of windows to calculate the CAR for
 
     Returns
