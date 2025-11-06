@@ -41,13 +41,17 @@ class EventStudy:
         n: int = 50,
         M: int = 1000,
         pop_mean: float = 0.0,
+        replacement: bool = False,
     ) -> pd.DataFrame:
         random_results = pd.DataFrame(
             index=self.car_windows, columns=["t{}".format(i) for i in range(M)]
         )
         for i in range(M):
             random_residuals = random_sample(
-                self.residuals, n=n, filtered_idx=filtered_dates
+                self.residuals,
+                n=n,
+                filtered_idx=filtered_dates,
+                replacement=replacement,
             )
             results = single_sample_test(
                 self.residuals,
@@ -69,13 +73,17 @@ class EventStudy:
         filtered_dates: list = [],
         n: int = 50,
         M: int = 1000,
+        replacement: bool = False,
     ) -> pd.DataFrame:
         two_sample_results = pd.DataFrame(
             index=self.car_windows, columns=["t{}".format(i) for i in range(M)]
         )
         for i in range(M):
             random_residuals = random_sample(
-                self.residuals, n=n, filtered_idx=filtered_dates
+                self.residuals,
+                n=n,
+                filtered_idx=filtered_dates,
+                replacement=replacement,
             )
             results = two_sample_test(
                 self.residuals, event_dates, random_residuals.index, self.car_windows

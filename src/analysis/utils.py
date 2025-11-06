@@ -6,16 +6,16 @@ def compute_car(stock_returns: pd.Series, event_index: int, window: int = 5) -> 
 
     Parameters
     ----------
-    `stock_returns : pd.Series`
+    stock_returns : pd.Series
         Time series of asset abnormal returns
-    `event_index : int`
+    event_index : int
         Integer index of event to calculate CAR about
-    `window : int`
+    window : int
         Integer representing how many indices the CAR should be computed over
 
     Returns
     -------
-    `car : float`
+    car : float
         The cummulative abonormal return (CAR) for the underlying asset
     """
     return stock_returns.iloc[event_index : event_index + window + 1].sum()
@@ -29,19 +29,19 @@ def rolling_residual(
 
     Parameters
     ----------
-    `X : pd.Series`
+    X : pd.Series
         Time series of asset returns to regress Y on
-    `Y : int`
+    Y : int
         Time series of target returns for the regression  of X on Y to predict
-    `window : int`
+    window : int
         Integer representing the sliding window the regression should be performed on
-    `expanding : boolean`
+    expanding : boolean
         Boolean indicating if we want to enable expanding argument into
         `statsmodels.regression.RollingOLS` object
 
     Returns
     -------
-    `residual : pd.Series`
+    residual : pd.Series
         The residual of the rolling regression of X on Y
     """
 

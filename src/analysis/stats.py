@@ -15,16 +15,18 @@ def random_sample(
 
     Parameters
     ----------
-    `stock_returns : pd.Series`
+    stock_returns : pd.Series
         Time series representing asset of interest's returns
-    `n : int`
+    n : int
         Number of random samples we want to take
-    `filtered_idx : list`
+    filtered_idx : list
         List of date indices to ignore when we sample from `stock_returns`
+    replacement : bool
+        Boolean flag indicating if sampling shold be done with replacement
 
     Returns
     -------
-    `sampled_stock_returns : pd.Series`
+    sampled_stock_returns : pd.Series
         Randomly sampled indcies from the `stock_returns` input
     """
 
@@ -44,18 +46,18 @@ def single_sample_test(
 
     Parameters
     ----------
-    `returns : pd.Series`
+    returns : pd.Series
         Timer series of abnormal returns for an underlying asset
-    `event_indices : list`
+    event_indices : list
         List of time series indices of events of interest to calculate CARs at
-    `windows : list`
+    windows : list
         List of windows to calculate the CAR for
-    `test_mean : float`
+    test_mean : float
         Provided population mean to pass as comparison in single-sample t-test
 
     Returns
     -------
-    `results : pd.DataFrame`
+    results : pd.DataFrame
         DataFrame containing the results of each t-test for each window, with the
         mean CAR, the standard deviation of the CAR, number of CAR samples, the
         t_stat from the test, and the p-value of the test.
@@ -100,19 +102,19 @@ def two_sample_test(
 
     Parameters
     ----------
-    `returns : pd.Series`
+    returns : pd.Series
         Timer series of abnormal returns for an underlying asset
-    `event_indices : list`
+    event_indices : list
         List of time series indices of events of interest to calculate CARs at
-    `compare_returns : pd.Series`
+    compare_returns : pd.Series
         Pandas series of events to act as null comparison in two-sample test
         (usually random)
-    `windows : list`
+    windows : list
         List of windows to calculate the CAR for
 
     Returns
     -------
-    `results : pd.DataFrame`
+    results : pd.DataFrame
         DataFrame containing the results of each t-test for each window, with the
         ean CAR, the standard deviation of the CAR, number of CAR samples, the
         t_stat from the test, and the p-value of the test.
