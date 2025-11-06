@@ -5,7 +5,10 @@ from src.analysis.utils import compute_car
 
 
 def random_sample(
-    stock_returns: pd.Series, n: int = 50, filtered_idx: list = []
+    stock_returns: pd.Series,
+    n: int = 50,
+    filtered_idx: list = [],
+    replacement: bool = False,
 ) -> pd.Series:
     """Sample randomly from asset return data by date, with option to filter
     out certain dates.
@@ -26,8 +29,8 @@ def random_sample(
     """
 
     if not filtered_idx:
-        return stock_returns.sample(n)
-    return stock_returns.loc[filtered_idx].sample(n)
+        return stock_returns.sample(n, replace=replacement)
+    return stock_returns.loc[filtered_idx].sample(n, replace=replacement)
 
 
 def single_sample_test(
