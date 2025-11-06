@@ -2,18 +2,50 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-sns.set()
+sns.set_theme()
 
 
 def plot_test_results(
     ticker: str,
-    test_result: pd.Series,
+    test_result: pd.DataFrame,
     random_result_mean: float = None,
     random_result_std: float = None,
-    figsize: tuple = (),
+    figsize: tuple[int] = (),
     single_test: bool = True,
     enable_plotly: bool = False,
 ) -> None:
+    """
+    Function to display result of event study tests. Allows for single
+    sample and two-sample plots, display of random variable results on
+    top of event driven results, as well as plotly plots if desired
+
+    Parameters
+    ----------
+    ticker : str
+        String representing the ticker of the asset being analyzed
+    test_results : pd.DataFrame
+        DataFrame with the results of teh event drive test
+    random_result_mean : float
+        Float representing the aggregate mean of random trials as null
+        test results
+    random_result_std : float
+        Float representing the aggregate std of random trials as null
+        test results
+    figsize : tuple[int]
+        Tuple representing the dimensions of figure to be plotted (for
+        matplotlib use only)
+    single_test : bool
+        Boolean flag indicating if test being displayed is single sample
+        or two-sample (mainly for creating figure title and legend labels)
+    enable_plotly : bool
+        Boolean flag indicating if you would like plot to be a `plotly` plot
+        rather than a `matplotlib` plot
+
+    Returns
+    -------
+    None
+    """
+
     if not enable_plotly:
         if single_test:
             str_label = "Random"
@@ -59,7 +91,6 @@ def plot_test_results(
 
         fig = go.Figure()
 
-        # Mean line for random t-stats
         fig.add_trace(
             go.Scatter(
                 x=test_result.index,
@@ -70,7 +101,6 @@ def plot_test_results(
             )
         )
 
-        # ±2σ confidence band
         fig.add_trace(
             go.Scatter(
                 x=list(test_result.index) + list(test_result.index[::-1]),
@@ -85,7 +115,6 @@ def plot_test_results(
             )
         )
 
-        # Event t-stats
         fig.add_trace(
             go.Scatter(
                 x=test_result.index,
@@ -96,10 +125,8 @@ def plot_test_results(
             )
         )
 
-        # Zero line
         fig.add_hline(y=0, line_dash="dash", line_color="black", opacity=0.4)
 
-        # Layout customization
         fig.update_layout(
             title=ticker + "Single T-Test: Event CARs vs Random CARs"
             if single_test

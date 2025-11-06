@@ -5,35 +5,40 @@ from src.analysis.utils import compute_car
 
 
 def random_sample(
-    stock_returns: pd.Series, n: int = 50, filtered_idx: list = []
+    stock_returns: pd.Series,
+    n: int = 50,
+    filtered_idx: list[pd.Timestamp] = [],
+    replacement: bool = False,
 ) -> pd.Series:
     """Sample randomly from asset return data by date, with option to filter
     out certain dates.
 
     Parameters
     ----------
-    `stock_returns : pd.Series`
+    stock_returns : pd.Series
         Time series representing asset of interest's returns
-    `n : int`
+    n : int
         Number of random samples we want to take
-    `filtered_idx : list`
+    filtered_idx : list[pd.Timestamp]
         List of date indices to ignore when we sample from `stock_returns`
+    replacement : bool
+        Boolean flag indicating if sampling shold be done with replacement
 
     Returns
     -------
-    `sampled_stock_returns : pd.Series`
+    sampled_stock_returns : pd.Series
         Randomly sampled indcies from the `stock_returns` input
     """
 
     if not filtered_idx:
-        return stock_returns.sample(n)
-    return stock_returns.loc[filtered_idx].sample(n)
+        return stock_returns.sample(n, replace=replacement)
+    return stock_returns.loc[filtered_idx].sample(n, replace=replacement)
 
 
 def single_sample_test(
     returns: pd.Series,
-    event_indices: list,
-    windows: list,
+    event_indices: list[pd.Timestamp],
+    windows: list[int],
     test_mean: float = 0.0,
 ) -> pd.DataFrame:
     """Perform a single-sample t-test of CARs over different windows for
@@ -41,18 +46,18 @@ def single_sample_test(
 
     Parameters
     ----------
-    `returns : pd.Series`
+    returns : pd.Series
         Timer series of abnormal returns for an underlying asset
-    `event_indices : list`
+    event_indices : list[pd.Timestamp]
         List of time series indices of events of interest to calculate CARs at
-    `windows : list`
+    windows : list[int]
         List of windows to calculate the CAR for
-    `test_mean : float`
+    test_mean : float
         Provided population mean to pass as comparison in single-sample t-test
 
     Returns
     -------
-    `results : pd.DataFrame`
+    results : pd.DataFrame
         DataFrame containing the results of each t-test for each window, with the
         mean CAR, the standard deviation of the CAR, number of CAR samples, the
         t_stat from the test, and the p-value of the test.
@@ -88,28 +93,28 @@ def single_sample_test(
 
 def two_sample_test(
     returns: pd.Series,
-    event_indices: list,
-    compare_events: list,
-    windows: list,
+    event_indices: list[pd.Timestamp],
+    compare_events: list[pd.Timestamp],
+    windows: list[int],
 ) -> pd.DataFrame:
     """Perform a two-sample t-test of CARs over different windows for multiple
     events.
 
     Parameters
     ----------
-    `returns : pd.Series`
+    returns : pd.Series
         Timer series of abnormal returns for an underlying asset
-    `event_indices : list`
+    event_indices : list[pd.Timestamp]
         List of time series indices of events of interest to calculate CARs at
-    `compare_returns : pd.Series`
-        Pandas series of events to act as null comparison in two-sample test
+    compare_events : list[pd.Timestamp]
+        List of pseudo-event dates to act as null comparison in two-sample test
         (usually random)
-    `windows : list`
+    windows : list[int]
         List of windows to calculate the CAR for
 
     Returns
     -------
-    `results : pd.DataFrame`
+    results : pd.DataFrame
         DataFrame containing the results of each t-test for each window, with the
         ean CAR, the standard deviation of the CAR, number of CAR samples, the
         t_stat from the test, and the p-value of the test.

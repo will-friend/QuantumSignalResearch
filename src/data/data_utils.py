@@ -19,20 +19,20 @@ def get_returns(
 
     Parameters
     ----------
-    `ticker : str`
+    ticker : str
         Ticker for the asset you wish to collect data on
-    `start_date : str`
+    start_date : str
         Start date to start data collection from
-    `end_date : str`
+    end_date : str
         End date to end data collection on
-    `to_pickle : bool`
+    to_pickle : bool
         Boolean indicating if user wishes to save return data to pickle file
-    `file_name : str`
+    file_name : str
         Full filename (including path) to save pickle file to
 
     Returns
     -------
-    `ticker_returns : pd.Series`
+    ticker_returns : pd.Series
         Time series of the ticker's returns over inputed time horizon
     """
 
@@ -63,20 +63,20 @@ def scrape_arxiv(
 
     Parameters
     ----------
-    `query : str`
+    query : str
         String specifying arxiv query user wishes to make
-    `start_date : str`
+    start_date : str
         Start date to start data collection from
-    `max_results : int`
+    max_results : int
         maximum number of results the query should return (most recent to least)
-    `to_pickle : bool`
+    to_pickle : bool
         Boolean indicating if user wishes to save return data to pickle file
-    `file_name : str`
+    file_name : str
         Full filename (including path) to save pickle file to
 
     Returns
     -------
-    `arxiv_df : pd.Series`
+    arxiv_df : pd.Series
         Dataframe with query result data for each publication collected
     """
 
