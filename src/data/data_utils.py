@@ -204,7 +204,7 @@ def scrape_arxiv_by_year_with_query_builder(
             stop_year_loop = False
             for e in entries:
                 try:
-                    pub_date = pd.Timestamp(e.published)
+                    pub_date = pd.Timestamp(e.published).tz_localize(None).normalize()
                 except Exception:
                     # malformed entry - skip
                     continue
