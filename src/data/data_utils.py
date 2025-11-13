@@ -126,12 +126,18 @@ def scrape_arxiv(
 def build_arxiv_query(query: str) -> str:
     """
     Prepare a valid arXiv search_query.
-    Handles AND clauses and quoted phrases properly.
-    Example input: "Quantum AND IBM Quantum"
+
+    Paramters
+    ---------
+    query : str
+        String with the query to be made as if passing to the arxiv package
+
+    Returns
+    -------
+    query : str
+        Updated query string to match api url formatting
     """
-    # normalize
     query = query.strip()
-    # Replace plain AND with parentheses if not already
     if "AND" in query.upper():
         parts = [p.strip() for p in query.split("AND")]
         joined = "+AND+".join(
@@ -143,15 +149,15 @@ def build_arxiv_query(query: str) -> str:
     return query
 
 
-def scrape_arxiv_by_year_with_query_builder(
+def scrape_arxiv_raw(
     query: str,
     start_year: int,
     end_year: int,
     max_results_per_year: int = 1000,
     batch_size: int = 200,
     delay: float = 0.8,
-    save_yearly: bool = False,
-    yearly_path_template: str = None,
+    save_data: bool = False,
+    file_name: str = None,
 ) -> pd.DataFrame:
     """
     Query arXiv using the raw Atom API, building a safe query string from `query`,
@@ -174,6 +180,11 @@ def scrape_arxiv_by_year_with_query_builder(
     yearly_path_template : str or None
         Template for year file names, e.g. "data/arxiv_{}_ibm.pkl" where {} will
         be year.
+
+    Return
+    ------
+    df : pd.DataFrame
+        DataFrame constaining publications found in specified inputted year range
     """
     base_url = "http://export.arxiv.org/api/query?"
     q = build_arxiv_query(query)
@@ -199,14 +210,11 @@ def scrape_arxiv_by_year_with_query_builder(
             if not entries:
                 break
 
-            # parse the batch; only keep entries whose published year == current year
             batch_kept = []
-            stop_year_loop = False
             for e in entries:
                 try:
                     pub_date = pd.Timestamp(e.published).tz_localize(None).normalize()
                 except Exception:
-                    # malformed entry - skip
                     continue
 
                 if pub_date.year == year:
@@ -222,50 +230,28 @@ def scrape_arxiv_by_year_with_query_builder(
                             # getattr(e, 'tags', None) else None
                         }
                     )
-                elif pub_date.year < year:
-                    # since results are descending in time, we've passed this year
-                    stop_year_loop = True
-                    break
                 else:
-                    # entry is for a later year (shouldn't happen if sorting correct) ->
-                    # keep scanning
                     continue
 
             year_results.extend(batch_kept)
             fetched += len(entries)
 
-            if stop_year_loop:
-                # reached older papers; no need to request later pages for this year
-                break
-
             if len(entries) < batch_size:
-                # server returned short page -> no more pages
                 break
 
             time.sleep(delay)
 
-        if save_yearly and yearly_path_template:
-            path = yearly_path_template.format(year)
-            try:
-                year_df = pd.DataFrame(year_results)
-                if not year_df.empty:
-                    year_df = year_df.sort_values(
-                        "published", ascending=True
-                    ).set_index("published")
-                    year_df.to_pickle(path)
-            except Exception as e:
-                print(f"  failed to save year {year}: {e}")
-
         all_results.extend(year_results)
 
-    # Build final dataframe, dedupe by url
     df = pd.DataFrame(all_results)
     if df.empty:
         print("No results collected.")
         return df
 
-    # remove duplicates (same paper can appear in multiple years due to feed oddities)
     df = df.drop_duplicates(subset="url")
     df = df.sort_values("published", ascending=True).set_index("published")
+
+    if save_data:
+        df.to_pickle(file_name)
 
     return df
